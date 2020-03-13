@@ -1,5 +1,5 @@
 /*
- * Toolform-compatible Jenkins 2 Pipeline build step for building Java 8 apps using Maven
+ * Toolform-compatible Jenkins 2 Pipeline build step for building Java 8 apps using Maven on ECS
  */
 
 def call(Map config) {
@@ -22,39 +22,34 @@ def call(Map config) {
     }
   }
 
-  container("java8-builder") {
-
-    stage('Build Details') {
-      echo "Project:   ${config.project}"
-      echo "Component: ${config.component}"
-      echo "BuildNumber: ${config.buildNumber}"
-    }
-
-    stage('Clean') {
-      mvn "clean"
-    }
-
-    stage('Install dependencies') {
-      mvn "dependency:resolve"
-    }
-
-    stage('Test') {
-      mvn "test"
-      junit allowEmptyResults: true, testResults: "target/surefire-reports/*.xml"
-    }
+  stage('Build Details') {
+    echo "Project:   ${config.project}"
+    echo "Component: ${config.component}"
+    echo "BuildNumber: ${config.buildNumber}"
   }
 
-  if(config.stage == 'dist') {
+  stage('Clean') {
+    mvn "clean"
+  }
 
-    container('java8-builder') {
-      stage('Build Release') {
-        mvn "package"
-      }
+  stage('Install dependencies') {
+    mvn "dependency:resolve"
+  }
 
-      stage('Package') {
-        sh "mkdir -p ${artifactDir}"
-        sh "cp -r ${config.baseDir}/target/* ${artifactDir}/"
-      }
+  stage('Test') {
+    mvn "test"
+    junit allowEmptyResults: true, testResults: "target/surefire-reports/*.xml"
+  }
+
+  if(config.stage == 'staging') {
+
+    stage('Build Release') {
+      mvn "package"
+    }
+
+    stage('Package') {
+      sh "mkdir -p ${artifactDir}"
+      sh "cp -r ${config.baseDir}/target/* ${artifactDir}/"
     }
 
     stage('Archive to Jenkins') {
