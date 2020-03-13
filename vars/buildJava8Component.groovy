@@ -41,11 +41,11 @@ def call(Map config) {
     junit allowEmptyResults: true, testResults: "target/surefire-reports/*.xml"
   }
 
-  if(config.stage == 'staging') {
+  stage('Package/install release') {
+    mvn "install"
+  }
 
-    stage('Package/install release') {
-      mvn "install"
-    }
+  if(config.stage == 'staging') {
 
     stage('Prepare archive') {
       sh "mkdir -p ${artifactDir}"
