@@ -49,6 +49,7 @@ def call(Map config) {
 
     stage('Prepare archive') {
       sh "mkdir -p ${artifactDir}"
+      sh "mkdir -p ${config.baseDir}/target"
       sh "cp -r ${config.baseDir}/target/* ${artifactDir}/"
     }
 
