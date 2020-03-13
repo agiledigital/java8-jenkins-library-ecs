@@ -50,6 +50,7 @@ def call(Map config) {
     stage('Prepare archive') {
       sh "mkdir -p ${artifactDir}"
       sh "mkdir -p ${config.baseDir}/target"
+      sh "echo '${config.project}/${config.component}/${config.buildNumber}' > ${config.baseDir}/target/jenkins.txt"
       sh "cp -r ${config.baseDir}/target/* ${artifactDir}/"
     }
 
