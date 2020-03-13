@@ -43,11 +43,11 @@ def call(Map config) {
 
   if(config.stage == 'staging') {
 
-    stage('Build Release') {
-      mvn "package"
+    stage('Package/install release') {
+      mvn "install"
     }
 
-    stage('Package') {
+    stage('Prepare archive') {
       sh "mkdir -p ${artifactDir}"
       sh "cp -r ${config.baseDir}/target/* ${artifactDir}/"
     }
